@@ -1,0 +1,444 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.Project>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@using Umbraco.Web.WebApi
+@using System.Configuration
+@using PROPERTY_SERVICE.Helpers
+@{
+    Layout = "Layout.cshtml";
+    var homePage = (ContentModels.Home)Model.Root();
+
+    var projectPage = (Project)homePage.ChildrenOfType("project").FirstOrDefault();
+
+    var pageNumber = QueryStringHelper.GetIntFromQueryString(Request, "page", 1);
+    var pageSize = QueryStringHelper.GetIntFromQueryString(Request, "size", 3);
+
+    var comments = Umbraco.Content(Model.Id).Children?.OrderByDescending(x => x.CreateDate).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+    var totalItemCount = Umbraco.Content(Model.Id).Children?.ToList().Count();
+    var pageCount = totalItemCount > 0 ? Math.Ceiling((double)totalItemCount / pageSize) : 1;
+
+    var _googleSiteKey = ConfigurationManager.AppSettings["GoogleSiteKey"];
+    var _googleSecretKey = ConfigurationManager.AppSettings["GoogleScretKey"];
+
+}
+
+<div class="col-sm-12 col-md-12 col-lg-12">
+    <!-- product -->
+    <div class="product-content product-wrap clearfix product-deatil">
+        <div class="row">
+            <div class="col-md-5 col-sm-12 col-xs-12">
+                <div class="product-image">
+                    <div id="myCarousel-2" class="carousel slide">
+                        <ol class="carousel-indicators">
+                            @{
+                                var isSelected = false;
+                            }
+                            @for (int i = 0; i < Model.Images.ToArray().Length; i++)
+                            {
+                                if (!isSelected)
+                                {
+                                    <li data-target="@($"#myCarousel-{i}")" data-slide-to="@i" class="active"></li>
+                                    isSelected = true;
+                                }
+                                else
+                                {
+                                    <li data-target="@($"#myCarousel-{i}")" data-slide-to="@i" class=""></li>
+                                }
+                            }
+                        </ol>
+                        <div class="carousel-inner">
+                            <!-- Slide 1 -->
+                            @{
+                                bool isActive = false;
+                            }
+                            @foreach (var item in Model.Images)
+                            {
+                                if (!isActive)
+                                {
+                                    <div class="item active">
+                                        <img src="@item.Url" class="img-responsive" alt="" />
+                                    </div>
+                                    isActive = true;
+                                }
+                                else
+                                {
+                                    <div class="item">
+                                        <img src="@item.Url" class="img-responsive" alt="" />
+                                    </div>
+                                }
+
+                            }
+                        </div>
+                        <a class="left carousel-control" href="#myCarousel-2" data-slide="prev"> <span class="glyphicon glyphicon-chevron-left"></span> </a>
+                        <a class="right carousel-control" href="#myCarousel-2" data-slide="next"> <span class="glyphicon glyphicon-chevron-right"></span> </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-md-offset-1 col-sm-12 col-xs-12">
+                <h2 class="name">
+                    @Model.NameProject
+                    <small><i class="glyphicon glyphicon-calendar"></i>@Model.CreateDate.ConvertTimeComment()</small>
+                </h2>
+                <hr />
+                <div class="certified">
+                    <ul>
+                        @if (!string.IsNullOrWhiteSpace(Model.Acreage))
+                        {
+                            <li>
+                                <a href="javascript:void(0);">Diện tích<span>@Model.Acreage</span></a>
+                            </li>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(Model.FacingHouse))
+                        {
+                            <li>
+                                <a href="javascript:void(0);">Hướng<span>@Model.FacingHouse.ToString()</span></a>
+                            </li>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(Model.Facade))
+                        {
+                            <li>
+                                <a href="javascript:void(0);">Mặt tiền<span>@Model.Facade</span></a>
+                            </li>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(Model.WorldHighway))
+                        {
+                            <li>
+                                <a href="javascript:void(0);">Lộ giới<span>@Model.WorldHighway</span></a>
+                            </li>
+                        }
+
+                    </ul>
+                </div>
+                <hr />
+                <div class="description description-tabs">
+                    <ul id="myTab" class="nav nav-pills">
+                        <li class="active"><a href="#more-contact" data-toggle="tab" class="no-margin">Liên hệ </a></li>
+                        <li class=""><a href="#more-map" data-toggle="tab">Bản đồ</a></li>
+                        <li class=""><a href="#more-overview" data-toggle="tab">Tổng quan</a></li>
+                    </ul>
+                    <div id="myTabContent" class="tab-content">
+                        <div class="tab-pane fade active in" id="more-contact">
+                            <div class="row">
+                                <div class="col-sm-2 col-md-2">
+                                    <img src="~/images/avarta-male.png"
+                                         alt="" class="img-rounded img-responsive" />
+                                </div>
+                                <div class="col-sm-4 col-md-4">
+                                    <blockquote>
+                                        <p>@Model.NameContact</p> <small><cite title="Source Title">@Model.AddressContact  <i class="glyphicon glyphicon-map-marker"></i></cite></small>
+                                    </blockquote>
+                                    <p>
+                                        <i class="glyphicon glyphicon-phone"></i> @Model.PhoneContact
+                                        <br /><i class="glyphicon glyphicon-envelope"></i> @Model.EmailContact
+                                        <br /> <i class="glyphicon glyphicon-gift"></i> @Model.BirthDay
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="more-map">
+                            <iframe src="@Model.GoogleMap" width="600" height="450" frameborder="0" style="border:0" allowfullscreen></iframe>
+                        </div>
+                        <div class="tab-pane fade" id="more-overview">
+                            @Model.Overview
+                        </div>
+
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-sm-12 col-md-6 col-lg-6">
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6">
+                        <div class="btn-group pull-right">
+                            <button class="btn btn-white btn-default SendEmail"><i class="fa fa-envelope"></i> Liên hệ chủ bđs</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end product -->
+</div>
+
+<!--comment-->
+<div class="container" style="width: 90%">
+    <div class="post-comments">
+
+        <form>
+            <div class="form-group">
+                <label for="usercomment">Name</label>
+                <input name="usercomment" class="form-control" id="user-main-comment" />
+                <label for="comment">Your Comment</label>
+                <textarea name="comment" class="form-control" rows="3" id="conent-main-comment"></textarea>
+                <div class="g-recaptcha" data-sitekey="@_googleSiteKey"></div>
+            </div>
+            <button type="button" data-typesubmitcomment="main-submit" class="btn btn-default submit-comment">Send</button>
+        </form>
+
+        @if (comments != null)
+        {
+            foreach (ContentModels.Comment com in comments)
+            {
+                <div class="row">
+
+                    <div class="media">
+                        <!-- first comment -->
+
+                        <div class="media-heading">
+                            <h1><span class="label label-info">@com.NameComment</span></h1> @com.CreateDate.ConvertTimeComment()
+                        </div>
+                        <div class="media-left">
+                            <div class="vote-wrap">
+                                <div class="save-post">
+                                    <a href="#"><span class="glyphicon glyphicon-star" aria-label="Save"></span></a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- media-left -->
+
+
+                        <div class="media-body">
+                            <p>@com.CommentContent</p>
+                            <div class="comment-meta">
+                                <span>
+                                    <a class="comment-click" data-comment="@com.NameComment" data-id="@com.IdComment" role="button" data-toggle="collapse" href="@($"#replyComment{com.IdComment}")" aria-expanded="false" aria-controls="collapseExample">Trả lời</a>
+                                </span>
+                                <div class="collapse" id="@($"replyComment{com.IdComment}")">
+                                    <form>
+                                        <div class="form-group">
+                                            <label for="usercomment">Name</label>
+                                            <input name="usercomment" id="@($"nameuser-{com.IdComment}")" class="form-control" />
+                                            <label for="comment">Your Comment</label>
+                                            <textarea name="comment" id="@($"comment-{com.IdComment}")" class="form-control" rows="3"></textarea>
+                                        </div>
+                                        <button type="button"
+                                                data-typesubmitcomment="reply-submit"
+                                                data-idtextcomment="@($"comment-{com.IdComment}")"
+                                                data-usercomment="@($"nameuser-{com.IdComment}")"
+                                                data-idcomment="@com.Id"
+                                                class="btn btn-default submit-comment">
+                                            Send
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            <!-- comment-meta -->
+
+                            @{
+                                var replyComment = Umbraco.Content(com.Id).Children?.ToList().OrderByDescending(x => x.CreateDate);
+                            }
+                            @if (replyComment != null)
+                            {
+                                foreach (ContentModels.ReplyComment replyCm in replyComment)
+                                {
+                                    <div class="media">
+                                        <!-- answer to the first comment -->
+                                        <div class="media-heading">
+                                            <h1><span class="label label-info">@replyCm.NameUserReply</span></h1> @replyCm.CreateDate.ConvertTimeComment()
+                                        </div>
+
+                                        <div class="panel-collapse collapse in">
+
+                                            <div class="media-left">
+                                                <div class="vote-wrap">
+                                                    <div class="save-post">
+                                                        <a href="#"><span class="glyphicon glyphicon-star" aria-label="Save"></span></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- media-left -->
+
+
+                                            <div class="media-body">
+                                                <p>@replyCm.ContentReply</p>
+                                                <div class="comment-meta">
+                                                    <span>
+                                                        <a class="comment-click" data-comment="@replyCm.NameUserReply" data-id="@replyCm.IDreplyComment" role="button" data-toggle="collapse" href="@($"#replyComment{replyCm.IDreplyComment}")" aria-expanded="false" aria-controls="collapseExample">Trả lời</a>
+                                                    </span>
+                                                    <div class="collapse" id="@($"replyComment{replyCm.IDreplyComment}")">
+                                                        <form>
+                                                            <div class="form-group">
+                                                                <label for="usercomment">Name</label>
+                                                                <input name="usercomment" id="@($"nameuser-{replyCm.IDreplyComment}")" class="form-control" />
+                                                                <label for="comment">Your Comment</label>
+                                                                <textarea name="comment" id="@($"comment-{replyCm.IDreplyComment}")" class="form-control" rows="3"></textarea>
+                                                            </div>
+                                                            <button type="button"
+                                                                    data-typesubmitcomment="reply-submit"
+                                                                    data-idtextcomment="@($"comment-{replyCm.IDreplyComment}")"
+                                                                    data-usercomment="@($"nameuser-{replyCm.IDreplyComment}")"
+                                                                    data-idcomment="@com.Id"
+                                                                    class="btn btn-default submit-comment">
+                                                                Send
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                                <!-- comment-meta -->
+                                            </div>
+                                        </div>
+                                        <!-- comments -->
+
+                                    </div>
+                                }
+                            }
+
+                        </div>
+                        <!-- comments -->
+
+                    </div>
+                    <!-- first comment -->
+                </div>
+            }
+        }
+
+    </div>
+    <!-- post-comments -->
+
+
+    <div style="float: right">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="page-link @(pageNumber == 1 ? "active" : "")" href="@($"{Model.Url}?page=1&size={pageSize}")" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                </li>
+
+                @for (int i = 1; i <= pageCount; i++)
+                {
+                    <li class="page-item @(pageNumber == i ? "active" : "")"><a class="page-link" href="@($"{Model.Url}?page={i}&size={pageSize}")">@i</a></li>
+                }
+
+                <li class="page-item">
+                    <a class="page-link @(pageNumber == pageCount ? "active" : "")" href="@($"{Model.Url}?page={pageCount}&size={pageSize}")" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+</div>
+@section Scripts{
+    <style>
+        .post-comments {
+            padding-bottom: 9px;
+            margin: 5px 0 5px;
+        }
+
+        .comments-nav {
+            border-bottom: 1px solid #eee;
+            margin-bottom: 5px;
+        }
+
+        .post-comments .comment-meta {
+            border-bottom: 1px solid #eee;
+            margin-bottom: 5px;
+        }
+
+        .post-comments .media {
+            border-left: 1px dotted #000;
+            border-bottom: 1px dotted #000;
+            margin-bottom: 5px;
+            padding-left: 10px;
+        }
+
+        .post-comments .media-heading {
+            font-size: 12px;
+            color: grey;
+        }
+
+        .post-comments .comment-meta a {
+            font-size: 12px;
+            color: grey;
+            font-weight: bolder;
+            margin-right: 5px;
+        }
+    </style>
+    <link href="~/css/project-details.css" rel="stylesheet" />
+
+    <script>
+        $(function () {
+            $('.SendEmail').click(function (event) {
+                var email = '@Model.EmailContact';
+                var subject = '@Model.NameProject';
+                var emailBody = 'Tôi cần thêm thông tin về bđs này, vui lòng liên hệ lại cho tôi. Tôi xin cảm ơn !';
+                document.location = "mailto:" + email + "?subject=" + subject + "&body=" + emailBody;
+            });
+
+            $('[data-toggle="collapse"]').on('click', function () {
+                var $this = $(this),
+                    $parent = typeof $this.data('parent') !== 'undefined' ? $($this.data('parent')) : undefined;
+                if ($parent === undefined) { /* Just toggle my  */
+                    $this.find('.glyphicon').toggleClass('glyphicon-plus glyphicon-minus');
+                    return true;
+                }
+
+                /* Open element will be close if parent !== undefined */
+                var currentIcon = $this.find('.glyphicon');
+                currentIcon.toggleClass('glyphicon-plus glyphicon-minus');
+                $parent.find('.glyphicon').not(currentIcon).removeClass('glyphicon-minus').addClass('glyphicon-plus');
+
+            });
+
+            $(".comment-click").click(function () {
+                var nameComment = $(this).context.attributes[1].value;
+                var idComment = $(this).context.attributes[2].value;
+                console.log($(this));
+                $("#comment-" + idComment).text("@@" + nameComment +":");
+            })
+
+            $(".submit-comment").click(function () {
+                //captcha
+                var recaptcha = $("#g-recaptcha-response").val();
+                if (recaptcha === "") {
+                    alert("Vui lòng nhập captcha !");
+                } else {
+                    var typeSubmitComment = $(this).context.attributes[1].value;
+
+                if (typeSubmitComment === 'main-submit') {
+                    var userCommentValue = $("#user-main-comment").val();
+                    var contentCommentValue = $("#conent-main-comment").val();
+                    var idProjectValue = parseInt('@Model.Id');
+
+                    if (!userCommentValue || !contentCommentValue) {
+                        alert("Vui lòng nhập đầy đủ thông tin !");
+                        return;
+                    }
+
+                    window.location.href = "@Url.SurfaceAction("SubmitComment", "Project")&idProject=" + idProjectValue +
+                        "&userComment=" + userCommentValue +
+                        "&contentComment=" + contentCommentValue +
+                        "&typeSubmit=" + typeSubmitComment;
+                } else {
+                    var idDataComment = $(this).context.attributes[2].value;
+                    var idUserComment = $(this).context.attributes[3].value;
+                    var idComment = $(this).context.attributes[4].value;
+
+                    var dataComment = $("#" + idDataComment).val();
+                    var userComment = $("#" + idUserComment).val();
+
+                    if (!dataComment || !userComment) {
+                        alert("Vui lòng nhập đầy đủ thông tin !");
+                        return;
+                    }
+
+                    window.location.href = "@Url.SurfaceAction("SubmitComment", "Project")&idProject=" + idComment +
+                        "&userComment=" + userComment +
+                        "&contentComment=" + dataComment +
+                        "&typeSubmit=" + typeSubmitComment +
+                        "&idMainPage=" + parseInt('@Model.Id');
+                }
+                }
+            });
+
+        });
+    </script>
+}

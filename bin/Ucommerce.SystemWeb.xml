@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Ucommerce.SystemWeb</name>
+    </assembly>
+    <members>
+        <member name="T:Ucommerce.Web.UI.App_Start.Installer">
+            <summary>
+            Static class holding PreApplicationStartMethod logic.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.Web.UI.App_Start.Installer.PreStart">
+            <summary>
+            Makes the assemblies in Ucommerce/Apps available to ASP.NET at compile time and runtime.
+            </summary>
+        </member>
+        <member name="F:Ucommerce.Web.UI.App_Start.Installer.BlacklistedAssemblyNames">
+            <summary>
+            Black list assemblies, that should not be loaded dynamically.
+            </summary>
+            <remarks>
+            Loading some assemblies, most notably System.Web.Mvc, can cause the ASP.NET
+            compilation to fail, because the types referenced in some pages becomes
+            ambigous, if two versions of MVC is available.
+            </remarks>
+        </member>
+    </members>
+</doc>

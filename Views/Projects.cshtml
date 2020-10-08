@@ -1,0 +1,379 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.Projects>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@using PROPERTY_SERVICE.Helpers;
+@using Umbraco.Core.Services;
+@{
+    Layout = "Layout.cshtml";
+    var homePage = (ContentModels.Home)Model.Root();
+
+    var priceDropdown = Services.DataTypeService.GetByEditorAlias("Umbraco.DropDown.Flexible").Where(x => x.Id == 1133).FirstOrDefault().Configuration;
+    var priceDropdownValue = ((Umbraco.Core.PropertyEditors.ValueListConfiguration)priceDropdown).Items.ToList();
+
+    var numberOfBedsDropdown = Services.DataTypeService.GetByEditorAlias("Umbraco.DropDown.Flexible").Where(x => x.Id == 1135).FirstOrDefault().Configuration;
+    var numberOfBedsDropdownValue = ((Umbraco.Core.PropertyEditors.ValueListConfiguration)numberOfBedsDropdown).Items.ToList();
+
+    var districtDropdown = Services.DataTypeService.GetByEditorAlias("Umbraco.DropDown.Flexible").Where(x => x.Id == -39).FirstOrDefault().Configuration;
+    var districtDropdownValue = ((Umbraco.Core.PropertyEditors.ValueListConfiguration)districtDropdown).Items.ToList();
+
+    var facingHouseDropdown = Services.DataTypeService.GetByEditorAlias("Umbraco.DropDown.Flexible").Where(x => x.Id == 1134).FirstOrDefault().Configuration;
+    var facingHouseDropdownValue = ((Umbraco.Core.PropertyEditors.ValueListConfiguration)facingHouseDropdown).Items.ToList();
+
+    var typePropertyDropdown = Services.DataTypeService.GetByEditorAlias("Umbraco.DropDown.Flexible").Where(x => x.Id == 1132).FirstOrDefault().Configuration;
+    var typePropertyDropdownValue = ((Umbraco.Core.PropertyEditors.ValueListConfiguration)typePropertyDropdown).Items.ToList();
+
+    var typeHouseDropdown = Services.DataTypeService.GetByEditorAlias("Umbraco.DropDown.Flexible").Where(x => x.Id == 1136).FirstOrDefault().Configuration;
+    var typeHouseDropdownValue = ((Umbraco.Core.PropertyEditors.ValueListConfiguration)typeHouseDropdown).Items.ToList();
+
+    var aceageDropdown = Services.DataTypeService.GetByEditorAlias("Umbraco.DropDown.Flexible").Where(x => x.Id == 1141).FirstOrDefault().Configuration;
+    var aceageDropdownValue = ((Umbraco.Core.PropertyEditors.ValueListConfiguration)aceageDropdown).Items.ToList();
+
+    var projectPage = (Projects)homePage.ChildrenOfType("projects").FirstOrDefault();
+    var infoProjects = projectPage.Children.Where(x => x.IsVisible()).OrderByDescending(y => y.CreateDate);
+
+    var isProjectPage = projectPage.Id == Model.Id;
+    var fallbackPageSize = isProjectPage ? 6 : 3;
+
+    var pageNumber = QueryStringHelper.GetIntFromQueryString(Request, "page", 1);
+    var pageSize = QueryStringHelper.GetIntFromQueryString(Request, "size", fallbackPageSize);
+
+    // Filter
+    var priceFilter = Request.QueryString["choices-single-price"];
+    if (!string.IsNullOrWhiteSpace(priceFilter))
+    {
+        infoProjects = infoProjects.Where(x => x.GetProperty("priceFilter").Value().Equals(priceFilter)).OrderByDescending(x => x.CreateDate);
+    }
+
+    var nobFilter = Request.QueryString["choices-single-nob"];
+    if (!string.IsNullOrWhiteSpace(nobFilter))
+    {
+        infoProjects = infoProjects.Where(x => x.GetProperty("numberOfBedrooms").Value().Equals(nobFilter)).OrderByDescending(x => x.CreateDate);
+    }
+
+    var distictFilter = Request.QueryString["choices-single-district"];
+    if (!string.IsNullOrWhiteSpace(distictFilter))
+    {
+        infoProjects = infoProjects.Where(x => x.GetProperty("theDistrict").Value().Equals(distictFilter)).OrderByDescending(x => x.CreateDate);
+    }
+
+    var facingHouseFilter = Request.QueryString["choices-single-facing-house"];
+    if (!string.IsNullOrWhiteSpace(facingHouseFilter))
+    {
+        infoProjects = infoProjects.Where(x => x.GetProperty("facingHouse").Value().Equals(facingHouseFilter)).OrderByDescending(x => x.CreateDate);
+    }
+
+    var typePropertyFilter = Request.QueryString["choices-single-type-property"];
+    if (!string.IsNullOrWhiteSpace(typePropertyFilter))
+    {
+        infoProjects = infoProjects.Where(x => x.GetProperty("typeProperty").Value().Equals(typePropertyFilter)).OrderByDescending(x => x.CreateDate);
+    }
+
+    var typeHouseFilter = Request.QueryString["choices-single-type-house"];
+    if (!string.IsNullOrWhiteSpace(typeHouseFilter))
+    {
+        infoProjects = infoProjects.Where(x => x.GetProperty("typeHouse").Value().Equals(typeHouseFilter)).OrderByDescending(x => x.CreateDate);
+    }
+
+    var aceageFilter = Request.QueryString["choices-single-aceage"];
+    if (!string.IsNullOrWhiteSpace(aceageFilter))
+    {
+        infoProjects = infoProjects.Where(x => x.GetProperty("acreageFilter").Value().Equals(aceageFilter)).OrderByDescending(x => x.CreateDate);
+    }
+
+    var searh = Request.QueryString["search"];
+    if (!string.IsNullOrWhiteSpace(searh))
+    {
+        infoProjects = infoProjects.
+            Where(x => (x.GetProperty("nameProject").Value().ToString().ToLower().Contains(searh.ToLower()) ||
+                        x.GetProperty("nameProjectNonUnicode").Value().ToString().ToLower().Contains(searh.ToLower())))
+            .OrderByDescending(x => x.CreateDate);
+    }
+
+    var pageOfProjects = infoProjects?.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToArray();
+    var totalItemCount = infoProjects?.Count();
+    var pageCount = totalItemCount > 0 ? Math.Ceiling((double)totalItemCount / pageSize) : 1;
+}
+<input type="hidden" id="hidden-type-property" value="@typePropertyFilter" />
+<input type="hidden" id="hidden-price" value="@priceFilter" />
+<input type="hidden" id="hidden-nob" value="@nobFilter" />
+<input type="hidden" id="hidden-district" value="@distictFilter" />
+<input type="hidden" id="hidden-facing-house" value="@facingHouseFilter" />
+<input type="hidden" id="hidden-type-house" value="@typeHouseFilter" />
+<input type="hidden" id="hidden-ace" value="@aceageFilter" />
+<input type="hidden" id="hidden-search" value="@searh" />
+
+<!-- Services Section -->
+<div id="services">
+    <div class="container">
+        <div class="s007">
+            <form>
+                <div class="inner-form">
+                    <div class="basic-search">
+                        <div class="input-field">
+                            <div class="icon-wrap">
+                                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20" viewBox="0 0 20 20">
+                                    <path d="M18.869 19.162l-5.943-6.484c1.339-1.401 2.075-3.233 2.075-5.178 0-2.003-0.78-3.887-2.197-5.303s-3.3-2.197-5.303-2.197-3.887 0.78-5.303 2.197-2.197 3.3-2.197 5.303 0.78 3.887 2.197 5.303 3.3 2.197 5.303 2.197c1.726 0 3.362-0.579 4.688-1.645l5.943 6.483c0.099 0.108 0.233 0.162 0.369 0.162 0.121 0 0.242-0.043 0.338-0.131 0.204-0.187 0.217-0.503 0.031-0.706zM1 7.5c0-3.584 2.916-6.5 6.5-6.5s6.5 2.916 6.5 6.5-2.916 6.5-6.5 6.5-6.5-2.916-6.5-6.5z"></path>
+                                </svg>
+                            </div>
+                            <input id="search" name="search" type="text" placeholder="Search..." />
+                            <div class="result-count">
+                                <span>@totalItemCount </span>kết quả
+                            </div>
+                        </div>
+                    </div>
+                    <div class="advance-search">
+                        <span class="desc">Tìm kiếm nâng cao</span>
+                        <div class="row">
+                            <div class="input-field">
+                                <div class="input-select">
+                                    <select data-trigger="" id="choices-single-price" name="choices-single-price">
+                                        <option placeholder="" value="">GIÁ</option>
+                                        @foreach (var price in priceDropdownValue)
+                                        {
+                                            <option id="@price.Id">@price.Value</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="input-field">
+                                <div class="input-select">
+                                    <select data-trigger="" id="choices-single-nob" name="choices-single-nob">
+                                        <option placeholder="" value="">SỐ PHÒNG NGỦ</option>
+                                        @foreach (var nob in numberOfBedsDropdownValue)
+                                        {
+                                            <option id="@nob.Id">@nob.Value</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="input-field">
+                                <div class="input-select">
+                                    <select data-trigger="" id="choices-single-district" name="choices-single-district">
+                                        <option placeholder="" value="">QUẬN/HUYỆN</option>
+                                        @foreach (var dict in districtDropdownValue)
+                                        {
+                                            <option id="@dict.Id">@dict.Value</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row second">
+                            <div class="input-field">
+                                <div class="input-select">
+                                    <select data-trigger="" id="choices-single-facing-house" name="choices-single-facing-house">
+                                        <option placeholder="" value="">HƯỚNG NHÀ</option>
+                                        @foreach (var fh in facingHouseDropdownValue)
+                                        {
+                                            <option id="@fh.Id">@fh.Value</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="input-field">
+                                <div class="input-select">
+                                    <select data-trigger="" id="choices-single-type-property" name="choices-single-type-property">
+                                        <option placeholder="" value="">LOẠI BẤT ĐỘNG SẢN</option>
+                                        @foreach (var tp in typePropertyDropdownValue)
+                                        {
+                                            <option id="@tp.Id">@tp.Value</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="input-field">
+                                <div class="input-select">
+                                    <select data-trigger="" id="choices-single-type-house" name="choices-single-type-house">
+                                        <option placeholder="" value="">LOẠI NHÀ</option>
+                                        @foreach (var th in typeHouseDropdownValue)
+                                        {
+                                            <option id="@th.Id">@th.Value</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row second" style="margin-top:-33px">
+                            <div class="input-field">
+                                <div class="input-select">
+                                    <select data-trigger="" id="choices-single-aceage" name="choices-single-aceage">
+                                        <option placeholder="" value="">DIỆN TÍCH</option>
+                                        @foreach (var ac in aceageDropdownValue)
+                                        {
+                                            <option id="@ac.Id">@ac.Value</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row third">
+                            <div class="input-field">
+                                <button class="btn-search">Search</button>
+                                <button class="btn-delete" id="delete">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="section-title">
+            <h2>@projectPage.Name</h2>
+        </div>
+
+        @{
+            var temp = 0;
+            //var infoProjects = projectPage.Children.ToArray();
+            var infoProjectCount = pageOfProjects?.Length;
+            var lineApartment = infoProjectCount != null ? (int)Math.Ceiling((double)infoProjectCount / (double)3) : 0;
+        }
+
+        @for (int i = 0; i < lineApartment; i++)
+        {
+            <div class="row">
+                @for (int j = 0; j < 3; j++)
+                {
+                    if (temp < infoProjectCount)
+                    {
+                        var infoProject = (Project)pageOfProjects[temp];
+                        <div class="col-md-4">
+                            <div class="service-media"> <img src="@infoProject.ImageRoot.Url" alt=" "> </div>
+                            <div class="service-desc">
+                                <h3><a href="@infoProject.Url">@infoProject.NameProject</a></h3>
+                                @*<p>@infoProject.Description</p>*@
+                                <p><span style="font-weight:bold">Diện tích: </span>@(infoProject.Acreage)m2</p> 
+                                <p><span style="font-weight:bold">Giá: </span>@infoProject.Price</p>
+                                <a href="@infoProject.Url" class="btn btn-primary" style="background-color:#0f396e">Chi tiết</a>
+                            </div>
+                        </div>
+                        temp++;
+                    }
+                }
+            </div>
+        }
+
+        <div style="float: right">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link @(pageNumber == 1 ? "active" : "")" href="@($"{projectPage.Url}?page=1&size={pageSize}")" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+
+                    @for (int i = 1; i <= pageCount; i++)
+                    {
+                        <li class="page-item @(pageNumber == i ? "active" : "")"><a class="page-link" href="@($"{projectPage.Url}?page={i}&size={pageSize}")">@i</a></li>
+                    }
+
+                    <li class="page-item">
+                        <a class="page-link @(pageNumber == pageCount ? "active" : "")" href="@($"{projectPage.Url}?page={pageCount}&size={pageSize}")" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <link href="~/css/search/main.css" rel="stylesheet" />
+    <script src="~/js/extention/choices.js"></script>
+
+
+    <script>
+        const customSelects = document.querySelectorAll("select");
+        const deleteBtn = document.getElementById('delete')
+
+        const priceChoice = initChoice('choices-single-price');
+        const nobChoice = initChoice('choices-single-nob');
+        const districtChoice = initChoice('choices-single-district');
+        const fsChoice = initChoice('choices-single-facing-house');
+        const tpChoice = initChoice('choices-single-type-property');
+        const thChoice = initChoice('choices-single-type-house');
+        const aceChoice = initChoice('choices-single-aceage');
+
+        for (let i = 0; i < customSelects.length; i++) {
+            customSelects[i].addEventListener('addItem', function (event) {
+                if (event.detail.value) {
+                    let parent = this.parentNode.parentNode
+                    parent.classList.add('valid')
+                    parent.classList.remove('invalid')
+                }
+                else {
+                    let parent = this.parentNode.parentNode
+                    parent.classList.add('invalid')
+                    parent.classList.remove('valid')
+                }
+            }, false);
+        }
+        deleteBtn.addEventListener("click", function (e) {
+            e.preventDefault()
+            const deleteAll = document.querySelectorAll('.choices__button')
+            for (let i = 0; i < deleteAll.length; i++) {
+                deleteAll[i].click();
+            }
+        });
+
+        function initChoice(id) {
+            const priceElement = document.getElementById(id);
+            return priceChoices = new Choices(priceElement,
+                {
+                    searchEnabled: true,
+                    removeItemButton: true,
+                    itemSelectText: '',
+                    noResultsText: 'Không có kết quả',
+                });
+        }
+
+        $(document).ready(function () {
+            setSelected();
+
+            function setSelected() {
+                var search = $("#hidden-search").val();
+                if (search) {
+                    $("#search").val(search);
+                }
+
+                var priceFilter = $("#hidden-price").val();
+                if (priceFilter) {
+                    priceChoice.setValueByChoice(priceFilter);
+                }
+
+                var nobFilter = $("#hidden-nob").val();
+                if (nobFilter) {
+                    nobChoice.setValueByChoice(nobFilter);
+                }
+
+                var districtFilter = $("#hidden-district").val();
+                if (districtFilter) {
+                    districtChoice.setValueByChoice(districtFilter);
+                }
+
+                var fsFilter = $("#hidden-facing-house").val();
+                if (fsFilter) {
+                    fsChoice.setValueByChoice(fsFilter);
+                }
+
+                var tpFilter = $("#hidden-type-property").val();
+                if (tpFilter) {
+                    tpChoice.setValueByChoice(tpFilter.toString());
+                    console.log(tpFilter);
+                }
+
+                var thFilter = $("#hidden-type-house").val();
+                if (thFilter) {
+                    thChoice.setValueByChoice(thFilter);
+                }
+
+                var aceFilter = $("#hidden-ace").val();
+                if (aceFilter) {
+                    aceChoice.setValueByChoice(aceFilter);
+                }
+            }
+        })
+
+    </script>
+}

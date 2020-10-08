@@ -1,0 +1,1 @@
+{"@t":"2020-09-02T13:00:54.1715378Z","@mt":"{LogPrefix} Canceling tasks","LogPrefix":"[TempFileCleanup] ","SourceContext":"Umbraco.Web.Scheduling.BackgroundTaskRunner","ProcessId":20652,"ProcessName":"w3wp","ThreadId":9,"AppDomainId":2,"AppDomainAppId":"LMW3SVC5ROOT","MachineName":"DESKTOP-64LAP26","Log4NetLevel":"INFO "}

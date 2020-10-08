@@ -1,0 +1,192 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = null;
+    var homePage = (ContentModels.Home)Model.Root();
+    var homeModelsPage = (HomeModels)homePage.ChildrenOfType("homeModels").FirstOrDefault();
+    var servicesPage = (Services)homePage.ChildrenOfType("services").FirstOrDefault();
+    var aboutPage = (About)homePage.ChildrenOfType("about").FirstOrDefault();
+    var contactPage = (Contact)homePage.ChildrenOfType("contact").FirstOrDefault();
+    var projectPage = (Projects)homePage.ChildrenOfType("projects").FirstOrDefault();
+    var newsPage = (News)homePage.ChildrenOfType("news").FirstOrDefault();
+    var selection = homePage.Children.Where(x => x.IsVisible());
+    var host = HttpContext.Current.Request.Url.Host;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@homePage.ProjectName</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- toast -->
+    <link href="https://cdn.jsdelivr.net/npm/toastify-js@1.9.0/src/toastify.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/fontawesome.css" integrity="sha384-eHoocPgXsiuZh+Yy6+7DsKAerLXyJmu2Hadh4QYyt+8v86geixVYwFqUvMU8X90l" crossorigin="anonymous" />
+
+    <!-- Favicons
+        ================================================== -->
+    <link rel="shortcut icon" href="@homePage.Logo.Url" type="image/x-icon">
+    <link rel="apple-touch-icon" href="~/img/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="~/img/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="~/img/apple-touch-icon-114x114.png">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" type="text/css" href="~/css/bootstrap.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+
+    <!-- Stylesheet
+        ================================================== -->
+    <link rel="stylesheet" type="text/css" href="~/css/style.css">
+    <link rel="stylesheet" type="text/css" href="~/css/nivo-lightbox/nivo-lightbox.css">
+    <link rel="stylesheet" type="text/css" href="~/css/nivo-lightbox/default.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+</head>
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+
+    <!-- Load Facebook SDK for JavaScript -->
+    <div id="fb-root"></div>
+    <script>
+        window.fbAsyncInit = function () {
+            FB.init({
+                xfbml: true,
+                version: 'v8.0'
+            });
+        };
+
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = 'https://connect.facebook.net/vi_VN/sdk/xfbml.customerchat.js';
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));</script>
+
+    <!-- Your Chat Plugin code -->
+    <div class="fb-customerchat"
+         attribution=setup_tool
+         page_id="347249872090856"
+         theme_color="#0f396e">
+    </div>
+
+    <!-- Navigation
+        ==========================================-->
+    <nav id="menu" class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+                <a class="navbar-brand page-scroll" href="@homePage.Url">@homePage.ProjectName</a>
+                <div class="phone"><span>Call Today</span>@homePage.PhoneNumber</div>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+
+                    @foreach (var item in selection.Where(x => x.HasProperty("addToNav") && x.GetProperty("addToNav").Value().Equals(true)))
+                    {
+                        if (item.UrlSegment == projectPage.UrlSegment || item.UrlSegment == newsPage.UrlSegment)
+                        {
+                            <li><a href="@item.Url" class="page-scroll">@item.Name</a></li>
+                        }
+                        else
+                        {
+                            <li><a href="@($"/#{item.UrlSegment}")" class="page-scroll">@item.Name</a></li>
+                        }
+                    }
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+    </nav>
+    <!-- Header -->
+    <header id="header">
+        <div class="intro">
+            <div class="overlay">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-8 col-md-offset-2 intro-text">
+                            <h1>
+                                @homePage.HomeTitle
+                            </h1>
+                            <p>@homePage.Sologan</p>
+                            <a href="@($"/#{aboutPage.UrlSegment}")" class="btn btn-custom btn-lg page-scroll">@aboutPage.NameAbout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    @RenderBody()
+
+    <!-- Footer Section -->
+    @*<div id="footer">
+            <div class="container text-center">
+                <p>&copy; 2017 INNOVA. Design by <a href="http://www.templatewire.com" rel="nofollow">TemplateWire</a></p>
+            </div>
+        </div>*@
+    <script type="text/javascript" src="~/js/jquery.1.11.1.js"></script>
+    <script type="text/javascript" src="~/js/bootstrap.js"></script>
+    <script type="text/javascript" src="~/js/SmoothScroll.js"></script>
+    <script type="text/javascript" src="~/js/nivo-lightbox.js"></script>
+    <script type="text/javascript" src="~/js/jqBootstrapValidation.js"></script>
+    <script type="text/javascript" src="~/js/main.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js@1.9.0/src/toastify.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.intro').css('background-image', 'url(@homePage.BannerHome.Url)');
+            $("#submit-contact").click(function () {
+                $("#phonenumber-error").text("");
+                $("#email-error").text("");
+                $("#name-error").text("");
+
+                var isTruePhone = validatePhoneNumber($("#phonenumber").val());
+                var isValid = true;
+
+                if (!isTruePhone) {
+                    $("#phonenumber-error").text("Please enter a valid phone number");
+                    isValid = false;
+                }
+
+                var isTrueEmail = validateEmail($("#email").val());
+                if (!isTrueEmail) {
+                    $("#email-error").text("Please enter a valid email");
+                    isValid = false;
+                }
+
+                var name = $("#name").val();
+                if (!name) {
+                    $("#name-error").text("Please enter a valid name");
+                    isValid = false;
+                }
+
+                var message = $("#message").val();
+                if (!message) {
+                    $("#message-error").text("Please enter a valid message");
+                    isValid = false;
+                }
+
+                if (!isValid)
+                    return false;
+
+                $("#contactForm").submit();
+            });
+        });
+    </script>
+    @RenderSection("Scripts", false)
+</body>
+</html>

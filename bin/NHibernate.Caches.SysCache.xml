@@ -1,0 +1,241 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NHibernate.Caches.SysCache</name>
+    </assembly>
+    <members>
+        <member name="T:NHibernate.Caches.SysCache.CacheConfig">
+            <summary>
+            Config properties of a cache region.
+            </summary>
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.CacheConfig.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Build a cache region configuration.
+            </summary>
+            <param name="region">The cache region name.</param>
+            <param name="expiration">The cached items expiration.</param>
+            <param name="priority">The cached items priority.</param>
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.CacheConfig.#ctor(System.String,System.String,System.String,System.String)">
+            <summary>
+            build a configuration
+            </summary>
+            <param name="region">The cache region name.</param>
+            <param name="expiration">The cached items expiration.</param>
+            <param name="sliding">Whether the expiration is sliding or not.</param>
+            <param name="priority">The cached items priority.</param>
+        </member>
+        <member name="P:NHibernate.Caches.SysCache.CacheConfig.Region">
+            <summary>The cache region name.</summary>
+        </member>
+        <member name="P:NHibernate.Caches.SysCache.CacheConfig.Properties">
+            <summary>The cache configuration properties.</summary>
+        </member>
+        <member name="T:NHibernate.Caches.SysCache.SysCache">
+            <summary>
+            Pluggable cache implementation using the System.Web.Caching classes.
+            </summary>
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCache.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCache.#ctor(System.String)">
+            <summary>
+            Constructor with no properties.
+            </summary>
+            <param name="region">The region of the cache.</param>
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCache.#ctor(System.String,System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Full constructor.
+            </summary>
+            <param name="region">The cache region name.</param>
+            <param name="properties">The cache configuration properties.</param>
+            <remarks>
+            There are four (4) configurable parameters:
+            <ul>
+              <li>expiration (or cache.default_expiration) = number of seconds to wait before expiring each item</li>
+              <li>cache.use_sliding_expiration = a boolean, true for resetting a cached item expiration each time it is accessed.</li>
+              <li>regionPrefix = a string for prefixing the region name.</li>
+              <li>priority = a numeric cost of expiring each item, where 1 is a low cost, 6 is the highest, and 3 is
+                    normal. Only values 1 through 6 are valid. 6 should be avoided, this value is the
+                    <see cref="F:System.Web.Caching.CacheItemPriority.NotRemovable" /> priority.</li>
+            </ul>
+            All parameters are optional. The defaults are an expiration of 300 seconds, no sliding expiration, no region
+            prefix and the default priority of 3.
+            </remarks>
+            <exception cref="T:System.IndexOutOfRangeException">The "priority" property is not between 1 and 6</exception>
+            <exception cref="T:System.ArgumentException">The "expiration" property could not be parsed.</exception>
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCache.GetAsync(System.Object,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCache.PutAsync(System.Object,System.Object,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCache.RemoveAsync(System.Object,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCache.ClearAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCache.LockAsync(System.Object,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCache.UnlockAsync(System.Object,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="P:NHibernate.Caches.SysCache.SysCache.RegionName">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCache.Get(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCache.Put(System.Object,System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCache.Remove(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCache.Clear">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCache.Destroy">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCache.Lock(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCache.Unlock(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCache.NextTimestamp">
+            <inheritdoc />
+        </member>
+        <member name="P:NHibernate.Caches.SysCache.SysCache.Timeout">
+            <inheritdoc />
+        </member>
+        <member name="T:NHibernate.Caches.SysCache.SysCacheBase">
+            <summary>
+            Pluggable cache implementation using the System.Web.Caching classes.
+            </summary>
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCacheBase.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCacheBase.#ctor(System.String)">
+            <summary>
+            Constructor with no properties.
+            </summary>
+            <param name="region">The cache region name.</param>
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCacheBase.#ctor(System.String,System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Full constructor.
+            </summary>
+            <param name="region">The cache region name.</param>
+            <param name="properties">The cache configuration properties.</param>
+            <remarks>
+            There are four (4) configurable parameters:
+            <ul>
+              <li>expiration (or cache.default_expiration) = number of seconds to wait before expiring each item</li>
+              <li>cache.use_sliding_expiration = a boolean, true for resetting a cached item expiration each time it is accessed.</li>
+              <li>regionPrefix = a string for prefixing the region name.</li>
+              <li>priority = a numeric cost of expiring each item, where 1 is a low cost, 6 is the highest, and 3 is
+                    normal. Only values 1 through 6 are valid. 6 should be avoided, this value is the
+                    <see cref="F:System.Web.Caching.CacheItemPriority.NotRemovable" /> priority.</li>
+            </ul>
+            All parameters are optional. The defaults are an expiration of 300 seconds, no sliding expiration, no region
+            prefix and the default priority of 3.
+            </remarks>
+            <exception cref="T:System.IndexOutOfRangeException">The "priority" property is not between 1 and 6</exception>
+            <exception cref="T:System.ArgumentException">The "expiration" property could not be parsed.</exception>
+        </member>
+        <member name="P:NHibernate.Caches.SysCache.SysCacheBase.Region">
+            <summary>
+            The cache region.
+            </summary>
+        </member>
+        <member name="P:NHibernate.Caches.SysCache.SysCacheBase.Expiration">
+            <summary>
+            The cached items expiration.
+            </summary>
+        </member>
+        <member name="P:NHibernate.Caches.SysCache.SysCacheBase.Priority">
+            <summary>
+            The cached items <see cref="T:System.Web.Caching.CacheItemPriority"/>.
+            </summary>
+        </member>
+        <member name="P:NHibernate.Caches.SysCache.SysCacheBase.UseSlidingExpiration">
+            <summary>
+            Whether the cached items expiration is sliding (reset at each hit) or not.
+            </summary>
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCacheBase.Get(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCacheBase.Put(System.Object,System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCacheBase.Remove(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCacheBase.Clear">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCacheBase.GenerateRootCacheKey">
+            <summary>
+            Generate a unique root key for all cache items to be dependant upon
+            </summary>
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCacheBase.Destroy">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCacheBase.Lock(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCacheBase.Unlock(System.Object,System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCacheBase.NextTimestamp">
+            <inheritdoc />
+        </member>
+        <member name="P:NHibernate.Caches.SysCache.SysCacheBase.Timeout">
+            <inheritdoc />
+        </member>
+        <member name="P:NHibernate.Caches.SysCache.SysCacheBase.RegionName">
+            <inheritdoc />
+        </member>
+        <member name="T:NHibernate.Caches.SysCache.SysCacheProvider">
+            <summary>
+            Cache provider using the System.Web.Caching classes.
+            </summary>
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCacheProvider.BuildCache(System.String,System.Collections.Generic.IDictionary{System.String,System.String})">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCacheProvider.NextTimestamp">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCacheProvider.Start(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <inheritdoc />
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCacheProvider.Stop">
+            <inheritdoc />
+        </member>
+        <member name="T:NHibernate.Caches.SysCache.SysCacheSectionHandler">
+            <summary>
+            Config file provider.
+            </summary>
+        </member>
+        <member name="M:NHibernate.Caches.SysCache.SysCacheSectionHandler.Create(System.Object,System.Object,System.Xml.XmlNode)">
+            <inheritdoc />
+            <returns>An array of <see cref="T:NHibernate.Caches.SysCache.CacheConfig"/> objects.</returns>
+        </member>
+    </members>
+</doc>

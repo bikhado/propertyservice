@@ -1,0 +1,832 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Ucommerce.SystemHttp</name>
+    </assembly>
+    <members>
+        <member name="T:Ucommerce.SystemHttp.App_Start.PreStartEnableAttributesRoutes">
+            <summary>
+            Enables attribute routing in WebAPI.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.App_Start.PreStartEnableAttributesRoutes.EnableAttributesRoutes">
+            <summary>
+            Enable attribute routing in WebAPI.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Attributes.AllowAnonymousAccessAttribute">
+            <summary>
+            Marker attribute needed to explicit tell if a webservice is allowed outside authenticated users. 
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Attributes.IsAuthenticatedAttribute">
+            <summary>
+            Attribute used to ensure the caller is authenticated.
+            </summary>
+        </member>
+        <member name="P:Ucommerce.SystemHttp.Attributes.IsAuthenticatedAttribute.AllowMultiple">
+            <inheritdoc />
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Attributes.IsAuthenticatedAttribute.ExecuteActionFilterAsync(System.Web.Http.Controllers.HttpActionContext,System.Threading.CancellationToken,System.Func{System.Threading.Tasks.Task{System.Net.Http.HttpResponseMessage}})">
+            <summary>
+            Ensures the caller is authenticated.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Attributes.IsInRoleAttribute">
+            <summary>
+            Ensures the caller has the role specified.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Attributes.IsInRoleAttribute.#ctor(System.Type)">
+            <summary>
+            Constructs the attribute.
+            </summary>
+        </member>
+        <member name="P:Ucommerce.SystemHttp.Attributes.IsInRoleAttribute.AllowMultiple">
+            <inheritdoc />
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Attributes.IsInRoleAttribute.ExecuteActionFilterAsync(System.Web.Http.Controllers.HttpActionContext,System.Threading.CancellationToken,System.Func{System.Threading.Tasks.Task{System.Net.Http.HttpResponseMessage}})">
+            <summary>
+            Ensure the caller has the role specified.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.v2.CatalogController">
+            <summary>
+            Web services for the new CatalogFoundation UI related to ProductCatalogs.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.CatalogController.ProductCatalogDetails(System.Guid,System.String)">
+            <summary>
+            Get properties for given ProductCatalog GUID and culture code.
+            </summary>
+            <param name="catalogGuid">Guid of the requested ProductCatalog.</param>
+            <param name="cultureCode">Culture code for multilingual properties in the format "en-US".</param>
+            <returns><see cref="M:Ucommerce.SystemHttp.Controllers.v2.CatalogController.ProductCatalogDetails(System.Guid,System.String)"/> as JSON.</returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.CatalogController.DeleteCatalog(System.Guid)">
+            <summary>
+            Web service that (soft) deletes a <see cref="T:Ucommerce.EntitiesV2.ProductCatalog"/> by the given Guid.
+            </summary>
+            <param name="catalogGuid">Guid of the <see cref="T:Ucommerce.EntitiesV2.ProductCatalog"/> to be deleted.</param>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.CatalogController.Update(System.Guid,System.String,System.Collections.Generic.Dictionary{System.String,Newtonsoft.Json.Linq.JToken})">
+            <summary>
+            Web service for patching a catalog.
+            </summary>
+            <param name="catalogGuid">Guid of the <see cref="T:Ucommerce.EntitiesV2.ProductCatalog"/> to be patched.</param>
+            <param name="cultureCode">The 5 letter culture code of the currently selected editing language.</param>
+            <param name="request">Parameter bound from the request body. </param>
+            <returns>200 if successful, 404 if the catalog is not found, 403 if permission was denied.</returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.CatalogController.Create(Ucommerce.SystemHttp.Models.CreateCatalogRequest)">
+            <summary>
+            End point for creating a new <see cref="T:Ucommerce.EntitiesV2.ProductCatalog"/> of a given name under specific <see cref="T:Ucommerce.EntitiesV2.ProductCatalogGroup"/> using default values and specifying sort order
+            </summary>
+            <param name="createCatalogRequest"></param>
+            <returns>
+            200 (with <see cref="T:Ucommerce.SystemHttp.Models.CreateCatalogResponse"/>) if successful
+            404 if the Store doesn't exist
+            403 if the User can't create a Catalog under Store due to insufficient permissions
+            404 if Catalog with the same name already exists under the Store
+            404 if there is no default PriceGroup in the database
+            </returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.CatalogController.PriceGroups(System.Guid)">
+            <summary>
+            Get all PriceGroups filtered by user permissions .
+            </summary>
+            <param name="productCatalogGuid">Guid of the current ProductCatalog.</param>
+            <returns>List of <see cref="T:Ucommerce.SystemHttp.Models.CatalogPriceGroup"/> as JSON.</returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.CatalogController.ProductCatalogDefinitions">
+            <summary>
+            Get all ProductCatalogDefinitions.
+            </summary>
+            <returns>List of <see cref="T:Ucommerce.SystemHttp.Models.ProductCatalogDefinition"/> as JSON.</returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.CatalogController.GetBuiltInProperties(Ucommerce.Catalog.Models.ProductCatalogBuiltInPropertiesQueryResult,System.Guid)">
+            <summary>
+            Maps <see cref="T:Ucommerce.Catalog.Models.ProductCatalogBuiltInPropertiesQueryResult"/> to <see cref="M:Ucommerce.SystemHttp.Controllers.v2.CatalogController.ProductCatalogDetails(System.Guid,System.String)"/>
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.CatalogController.DefaultPriceGroupExists">
+            <summary>
+            Checks whether default <see cref="T:Ucommerce.EntitiesV2.PriceGroup"/> exists in the database
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.v2.CategoryController">
+            <summary>
+            Web services for the new CatalogFoundation UI related to Categories.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.CategoryController.CategoryDetails(System.Guid,System.String)">
+            <summary>
+            Get properties for a given Category GUID and culture code.
+            </summary>
+            <param name="categoryGuid">Guid of the requested Category.</param>
+            <param name="cultureCode">Culture code for multilingual properties in the format "en-US".</param>
+            <returns><see cref="M:Ucommerce.SystemHttp.Controllers.v2.CategoryController.CategoryDetails(System.Guid,System.String)"/> as JSON.</returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.CategoryController.Create(Ucommerce.Catalog.Models.CreateCategoryRequest)">
+            <summary>
+            Creates a new category in a catalog, potentially as child of another category.
+            </summary>
+            <param name="category">Name, ProductCatalogId and ParentCategoryId provided in a JSON in the request body</param>
+            <returns>201 created, 404 not found, 403 forbidden, 400 bad request</returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.CategoryController.Update(System.Guid,System.String,System.Collections.Generic.Dictionary{System.String,Newtonsoft.Json.Linq.JToken})">
+            <summary>
+            Web service for patching a category.
+            </summary>
+            <param name="categoryGuid">Guid of the <see cref="T:Ucommerce.EntitiesV2.Category"/> to be patched.</param>
+            <param name="request">Parameter bound from the request body.</param>
+            <returns>200 if successful, 404 if the category is not found, 401 if permission was denied.</returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.CategoryController.DeleteCategory(System.Guid)">
+            <summary>
+            Web service that (soft) deletes a <see cref="T:Ucommerce.EntitiesV2.Category" /> by the given Guid.
+            </summary>
+            <param name="categoryGuid">Guid of the <see cref="T:Ucommerce.EntitiesV2.Category"/> to be deleted.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.CategoryController.CategoryDefinitions">
+            <summary>
+            Get all CategoryDefinitions.
+            </summary>
+            <returns>List of <see cref="T:Ucommerce.SystemHttp.Models.CategoryDefinition"/> as JSON.</returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.CategoryController.RemoveProductsFromCategory(System.Guid,Ucommerce.SystemHttp.Models.RemoveProductsFromCategoryRequest)">
+            <summary>
+            Remove multiple products from a category.
+            </summary>
+            <param name="categoryGuid">GUID of the <see cref="T:Ucommerce.EntitiesV2.Category"/> that the products should be removed from.</param>
+            <param name="removeProductsFromCategoryRequest"> Request body containing a list of <see cref="T:Ucommerce.EntitiesV2.Product"/> GUIDs that should be removed from the <see cref="T:Ucommerce.EntitiesV2.Category"/>.</param>
+            <returns><see cref="T:Ucommerce.SystemHttp.Models.RemoveProductsFromCategoryResponse"/> containing a list of status messages for each product.</returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.CategoryController.AddProductsToCategory(System.Guid,Ucommerce.SystemHttp.Models.AddProductsToCategoryRequest)">
+            <summary>
+            Add multiple products to a category.
+            </summary>
+            <param name="categoryGuid">GUID of the <see cref="T:Ucommerce.EntitiesV2.Category"/> that the products should be added to.</param>
+            <param name="addProductsToCategoryRequest"> Request body containing a list of <see cref="T:Ucommerce.EntitiesV2.Product"/> GUIDs that should be added to the <see cref="T:Ucommerce.EntitiesV2.Category"/>.</param>
+            <returns><see cref="T:Ucommerce.SystemHttp.Models.AddProductsToCategoryResponse"/> containing a list of status messages for each product.</returns>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.v2.ContentApiController">
+            <summary>
+            Web services related to the content trees.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.ContentApiController.Get">
+            <summary>
+            Get the root node for a service type.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.ContentApiController.Get(System.String)">
+            <summary>
+            Get a single node
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.ContentApiController.Get(System.String,System.String)">
+            <summary>
+            Gets child nodes.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.v2.ProductController">
+            <summary>
+            Web services for the new CatalogFoundation UI related to Products.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.ProductController.Definitions">
+            <summary>
+            Returns definition names and guids for the dropdown list
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.ProductController.FullDefinitions">
+            <summary>
+            Returns definition information about all Products.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.ProductController.Update(System.Guid,System.String,System.Collections.Generic.Dictionary{System.String,Newtonsoft.Json.Linq.JToken})">
+            <summary>
+            Web service for patching a product.
+            </summary>
+            <param name="productGuid">Guid of the <see cref="T:Ucommerce.EntitiesV2.Product"/> to be patched.</param>
+            <param name="request">Parameter bound from the request body.</param>
+            <returns>200 if successful, 404 if the category is not found, 401 if permission was denied.</returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.ProductController.GetLastModifiedDate">
+            <summary>
+            Returns the last combined last modified date of product definitions and datatypes.
+            </summary>
+            <remarks>ProductDefinition last modified gets updated when product definition fields are modified.
+            DataType last modified gets updated when DataTypeEnums are modified. </remarks>
+            <returns>The all-round last modified, in a syntax that is ready for comparison with an HTTP header value.</returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.ProductController.Create(Ucommerce.Catalog.Models.CreateProductRequest)">
+            <summary>
+            Creates a new product in a category.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.ProductController.Create(System.Guid,Ucommerce.Catalog.Models.CreateVariantRequest)">
+            <summary>
+            Creates a new variant for a product.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.ProductController.GetVariants(System.Guid,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.String)">
+            <summary>
+            Returns variant data for a given <see cref="T:Ucommerce.EntitiesV2.Product"/> and culture code. Can be paginated and sorted.
+            </summary>
+            <param name="productGuid">Guid of the <see cref="T:Ucommerce.EntitiesV2.Product"/> it returns the variants for.</param>
+            <param name="cultureCode">Culture code based on which it returns multilingual properties.</param>
+            <param name="limit">Number of variants to return.</param>
+            <param name="startAt">Index of the item from which the returned page should start.</param>
+            <param name="sort">name of the property to be sorted by. Prefixed with "-" if descending.</param>
+            <returns>JSON of variants.</returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.ProductController.Upsert(System.Guid,Ucommerce.SystemHttp.Models.UpsertProductRelationRequest)">
+            <summary>
+            Creates or updates a relation between two or more products.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.ProductController.Delete(System.Guid,System.Collections.Generic.List{Ucommerce.SystemHttp.Models.DeleteProductRelationRequest})">
+            <summary>
+            Deletes a new relation between two products.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.v2.StoreController">
+            <summary>
+            Web services for the new Catalogs UI related to Stores.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.StoreController.GetStores">
+            <summary>
+            Get all Stores that the user has permissions for
+            </summary>
+            <returns>List of <see cref="T:Ucommerce.SystemHttp.Models.GetStoresResponse"/> as JSON.</returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.StoreController.GetCatalogs(System.Guid,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            Get sorted <see cref="T:Ucommerce.EntitiesV2.ProductCatalog"/>s that the user has permission for from the <see cref="T:Ucommerce.EntitiesV2.ProductCatalogGroup"/> 
+            </summary>
+            <param name="storeGuid">Guid of the <see cref="T:Ucommerce.EntitiesV2.ProductCatalogGroup"/> that contains <see cref="T:Ucommerce.EntitiesV2.ProductCatalog"/>s that should be returned</param>
+            <param name="limit">Number of items returned</param>
+            <param name="marker">All the items in the sorted list will be skipped until an item with a Guid equal to the marker is found (that item is also skipped)</param>
+            <returns>List of <see cref="T:Ucommerce.SystemHttp.Models.GetStoreCatalogsResponse"/> as JSON</returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.StoreController.MapToGetStoreCatalogsResponse(Ucommerce.EntitiesV2.ProductCatalog)">
+            <summary>
+            Transforms <see cref="T:Ucommerce.EntitiesV2.ProductCatalog"/> into <see cref="T:Ucommerce.SystemHttp.Models.GetStoreCatalogsResponse"/>
+            </summary>
+            <param name="catalog"></param>
+            <returns><see cref="T:Ucommerce.SystemHttp.Models.GetStoreCatalogsResponse"/></returns>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.v2.SystemController">
+            <summary>
+            Web services related to retrieving system information.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.v2.MediaApiController">
+            <summary>
+            Web services related to the content trees.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.MediaApiController.Get">
+            <summary>
+            Get the root node for a service type.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.MediaApiController.Get(System.String)">
+            <summary>
+            Get a single node
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.v2.MediaApiController.Get(System.String,System.String)">
+            <summary>
+            Gets child nodes.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.UcommerceAppsController">
+            <summary>
+            Web services related to the apps framework.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceAppsController.GetInstalledApps">
+            <summary>
+            Gets a list of installed apps.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceAppsController.GetMaxRequestLength">
+            <summary>
+            Returns the max request length accepted by the system.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceAppsController.Post(Ucommerce.SystemHttp.Controllers.UcommerceAppsController.UploadAppRequest)">
+            <summary>
+            Upload an app.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceAppsController.Post(Ucommerce.SystemHttp.Controllers.UcommerceAppsController.InstallAppRequest)">
+            <summary>
+            Install an app.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceAppsController.Post(Ucommerce.SystemHttp.Controllers.UcommerceAppsController.UninstallAppRequest)">
+            <summary>
+            Uninstall an app.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.UcommerceAppsController.UploadAppRequest">
+            <summary>
+            DTO.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.UcommerceAppsController.InstallAppRequest">
+            <summary>
+            DTO.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.UcommerceAppsController.UninstallAppRequest">
+            <summary>
+            DTO.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.UcommerceCatalogSearchController">
+            <summary>
+            Web services related to searching in the catalog structure.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceCatalogSearchController.FullTextSearchForProductsWithSuggestions(Ucommerce.SystemHttp.Models.CatalogSearchRequest)">
+            <summary>
+            Full text search for products by name. Results include suggestions.
+            </summary>
+            <param name="request">Contains the search term that will be used for searching in product names.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceCatalogSearchController.FullTextSearchForProductsAndVariants(Ucommerce.SystemHttp.Models.CatalogSearchRequest)">
+            <summary>
+            Full text search for products and variants by name. Results include suggestions.
+            </summary>
+            <param name="request">Contains the search term that will be used for searching in product and variant names.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.UcommerceContentController">
+            <summary>
+            Web services related to the content trees.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.UcommerceContentController.Nodes">
+            <summary>
+            DTO class.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceContentController.Get(System.String)">
+            <summary>
+            Get the root node for a service type.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceContentController.Get(System.String,System.String,System.String)">
+            <summary>
+            Gets child nodes.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceContentController.GetImage(System.String)">
+            <summary>
+            Gets image url for a node.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceContentController.Post(Ucommerce.SystemHttp.Controllers.UcommerceContentController.Nodes)">
+            <summary>
+            Get specific child nodes.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.UcommerceDefinitionGraphController">
+            <summary>
+            Web services related to the definition graph.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceDefinitionGraphController.Get">
+            <summary>
+            Service used for getting the graph data for Product Definitions.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceDefinitionGraphController.Get(System.Int32)">
+            <summary>
+            Service used for getting the graph data for all definitions, except products.
+            </summary>
+            <param name="id">The id of the type of definition.</param>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.UcommerceLocalizationController">
+            <summary>
+            Web services related to localization.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.UcommerceLocalizationController.Language">
+            <summary>
+            DTO class.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceLocalizationController.Post(Ucommerce.SystemHttp.Controllers.UcommerceLocalizationController.Language)">
+            <summary>
+            Returns a list of translated string for a specific language.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.UcommerceCatalogDeleteController">
+            <summary>
+            Web services related to deleting catalog entities.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceCatalogDeleteController.DeleteCatalogGroup(System.Int32)">
+            <summary>
+            Delete catalog group.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceCatalogDeleteController.DeleteCatalog(System.Int32)">
+            <summary>
+            Delete catalog.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceCatalogDeleteController.DeleteCategory(System.Int32)">
+            <summary>
+            Delete category.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceCatalogDeleteController.DeleteProduct(System.Int32)">
+            <summary>
+            Delete product.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.UcommerceMarketingDeleteController">
+            <summary>
+            Web services related to deleting marketing entities.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceMarketingDeleteController.DeleteCampaign(System.Int32)">
+            <summary>
+            Delete campaign.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceMarketingDeleteController.DeleteCampaignItem(System.Int32)">
+            <summary>
+            Delete campaign item.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.UcommerceSettingsCatalogDeleteController">
+            <summary>
+            Web services related to deleting catalog settings entities.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceSettingsCatalogDeleteController.DeleteCatalogPriceGroup(System.Int32)">
+            <summary>
+            Delete price group.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceSettingsCatalogDeleteController.DeleteProductRelationType(System.Int32)">
+            <summary>
+            Delete product relation type.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.UcommerceSettingsDefinitionDeleteController">
+            <summary>
+            Web services related to deleting definition entities.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceSettingsDefinitionDeleteController.DeleteProductDefinition(System.Int32)">
+            <summary>
+            Delete product definition.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceSettingsDefinitionDeleteController.DeleteProductDefinitionField(System.Int32)">
+            <summary>
+            Delete product definition field.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceSettingsDefinitionDeleteController.DeleteDefinition(System.Int32)">
+            <summary>
+            Delete definition.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceSettingsDefinitionDeleteController.DeleteDefinitionField(System.Int32)">
+            <summary>
+            Delete definition field.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceSettingsDefinitionDeleteController.DeleteDataType(System.Int32)">
+            <summary>
+            Delete data type.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceSettingsDefinitionDeleteController.DeleteDataTypeEnum(System.Int32)">
+            <summary>
+            Delete data type enum.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.UcommerceSettingsOrderDeleteController">
+            <summary>
+            Web services related to deleting order settings entities.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceSettingsOrderDeleteController.DeleteShippingMethod(System.Int32)">
+            <summary>
+            Delete shipping method.
+            </summary>
+            <param name="shippingMethodId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceSettingsOrderDeleteController.DeletePaymentMethod(System.Int32)">
+            <summary>
+            Delete payment method.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceSettingsOrderDeleteController.DeleteCountry(System.Int32)">
+            <summary>
+            Delete country.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceSettingsOrderDeleteController.DeleteCurrency(System.Int32)">
+            <summary>
+            Delete currency.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceSettingsOrderDeleteController.DeleteOrderNumberSerie(System.Int32)">
+            <summary>
+            Delete order number series.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.UcommerceSettingsEmailDeleteController">
+            <summary>
+            Web services related to deleting email settings entities.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceSettingsEmailDeleteController.DeleteEmailProfile(System.Int32)">
+            <summary>
+            Delete email profile.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceSettingsEmailDeleteController.DeleteEmailType(System.Int32)">
+            <summary>
+            Delete email type.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.UcommerceSynchronizationController">
+            <summary>
+            Web services related to synchronization of Ucommerce data.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceSynchronizationController.GetExportProductForCategory(System.Int32)">
+            <summary>
+            Returns stream of all product data in specified category.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.UcommerceWidgetCatalogController">
+            <summary>
+            Web services related to the catalog widgets.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceWidgetCatalogController.Post(Ucommerce.SystemHttp.Models.CatalogSearchRequest)">
+            <summary>
+            Gets products based on a full text search.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.UcommerceWidgetMarketingController">
+            <summary>
+            Web services related to marketing widgets.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceWidgetMarketingController.Get">
+            <summary>
+            Gets a timeline of the active campaigns.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.UcommerceWidgetController">
+            <summary>
+            Web services related to the widget framework.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceWidgetController.Get">
+            <summary>
+            Gets all widgets.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceWidgetController.Get(System.String)">
+            <summary>
+            Gets a user's section setup.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceWidgetController.Post(Ucommerce.SystemHttp.Models.AddWidgetRequest)">
+            <summary>
+            Adds a widget to a user's section.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceWidgetController.Get(System.Int32)">
+            <summary>
+            Removes a widget from a user's section.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceWidgetController.Post(Ucommerce.SystemHttp.Models.UpdateWidgetRequest)">
+            <summary>
+            Updates a widget's settings.
+            </summary>
+            <param name="widgetRequest"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Controllers.UcommerceWidgetOrderController">
+            <summary>
+            Web services related to order widgets.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceWidgetOrderController.Get">
+            <summary>
+            Get the available order statuses.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceWidgetOrderController.Post(Ucommerce.SystemHttp.Models.PurchaseOrderCountRequest)">
+            <summary>
+            Gets a sum of orders based on order statuses and time, grouped by store.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceWidgetOrderController.Post(Ucommerce.SystemHttp.Models.PurchaseOrderSearchRequest)">
+            <summary>
+            Get a summary of orders based on interval and order statuses.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceWidgetOrderController.Get(System.String)">
+            <summary>
+            Get orders per day based on an interval.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Controllers.UcommerceWidgetOrderController.CurrencySummaryToday(System.String)">
+            <summary>
+            Get revenue summary grouped by currency.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Models.AddProductsToCategoryRequest">
+            <summary>
+            Request model for <see cref="M:Ucommerce.SystemHttp.Controllers.v2.CategoryController.AddProductsToCategory(System.Guid,Ucommerce.SystemHttp.Models.AddProductsToCategoryRequest)"/>.
+            </summary>
+        </member>
+        <member name="P:Ucommerce.SystemHttp.Models.AddProductsToCategoryRequest.ProductsGuids">
+            <summary>
+            A list of product GUIDs to be associated with the resource category.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Models.AddWidgetRequest">
+            <summary>
+            DTO class.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Models.CatalogPriceGroup">
+            <summary>
+            DTO used by the Category/PriceGroups web service.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Models.CategoryDetails">
+            <summary>
+            DTO used by the Category/CategoryDetails web service.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Models.ProductDetails">
+            <summary>
+            DTO used by the Product controller webs ervices.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Models.MetaData">
+            <summary>
+            DTO used by the Catalog/ProductCatalogDetails web service.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Models.PatchCatalogRequest">
+            <summary>
+            Request parameter or the patch catalog web service.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Models.RemoveProductsFromCategoryRequest">
+            <summary>
+            Request model for <see cref="M:Ucommerce.SystemHttp.Controllers.v2.CategoryController.RemoveProductsFromCategory(System.Guid,Ucommerce.SystemHttp.Models.RemoveProductsFromCategoryRequest)"/>.
+            </summary>
+        </member>
+        <member name="P:Ucommerce.SystemHttp.Models.RemoveProductsFromCategoryRequest.ProductGuids">
+            <summary>
+            A list of product GUIDs to be disassociated with the resource category.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Models.UpdateCategoryRequest">
+            <summary>
+            Request parameter or the patch category web service.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Models.UpdateCatalogRequest">
+            <summary>
+            Request parameter for the patch catalog web service.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Models.UpdateWidgetRequest">
+            <summary>
+            DTO class.
+            </summary>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Pipelines.Initialize.ReinitializeWebApiControllerCache">
+            <summary>
+            Poke the WebAPI internal cache to get it to re-read the controllers.
+            </summary>
+            <remarks>
+            WebAPI initializes its internal cache of available controllers in a "PreApplicationStartMethod".
+            Ucommerce loads all the assemblies found in the "Apps" folder in a "PreApplicationStartMethod".
+            
+            This introduces a race condition, since the order of execution of "PreApplicationStartMethod" cannot be controlled.
+            
+            So in order for any custom WebAPI controllers found in assemblies in "Apps" to be picked up by WebAPI,
+            we need a little magic to get it to re-initialize its internal list, at a point where we know the
+            additional assemblies have been loaded.
+            </remarks>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Pipelines.Initialize.ReinitializeWebApiControllerCache.Execute(Ucommerce.Pipelines.Initialization.InitializeArgs)">
+            <summary>
+            Find the internal controller caches, using reflection, and "persuade" them to re-initialize.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Validators.CatalogValidator.UniqueCatalogNameValidator(Ucommerce.EntitiesV2.ProductCatalog,System.String)">
+            <summary>
+            This method will validate the catalog name uniqueness
+            </summary>
+            <param name="catalog"></param>
+            <param name="name"></param>
+            <returns>True is validation is successful, False if validation fails.</returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Validators.CategoryValidator.OptionalUniqueNameValidator(Ucommerce.EntitiesV2.Category,System.String)">
+            <summary>
+            This method will validate the category name uniqueness depending on the EnforceCategoryNameUniquenessWithinCatalogs configuration, from settings.config (true by default).
+            </summary>
+            <param name="category">The category being validated.</param>
+            <param name="name">The name property being validated.</param>
+            <returns>True is validation is successful, False if validation fails.</returns>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Validators.ProductValidator">
+            <summary>
+            Validator that validates a <see cref="T:Ucommerce.EntitiesV2.Product"/>.
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Validators.ProductValidator.#ctor(FluentValidation.AbstractValidator{Ucommerce.EntitiesV2.ProductDescription})">
+            <summary>
+            Validates a <see cref="T:Ucommerce.EntitiesV2.Product"/>.
+            </summary>
+            <param name="productDescriptionValidator"> A validator for product descriptions.</param>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Validators.ProductValidator.GetUniqueSkuMessage(Ucommerce.EntitiesV2.Product,System.Object)">
+            <summary>
+            Returns a string validation message for a product and sku string
+            </summary>
+            <param name="product"></param>
+            <param name="sku"></param>
+            <returns>Formatted validation message.</returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Validators.ProductValidator.GetProductType(Ucommerce.EntitiesV2.Product)">
+            <summary>
+            Gets the type of the product as a string, whether it is a "product family", "product" or "variant"
+            </summary>
+            <param name="product"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Validators.ProductValidator.UniqueSkuAndVariantSku(Ucommerce.EntitiesV2.Product,System.String,System.String)">
+            <summary>
+            Checks whether the sku of the product is unique.
+            </summary>
+            <param name="product"></param>
+            <param name="sku"></param>
+            <param name="variantSku"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Ucommerce.SystemHttp.Validators.VariantValidator">
+            <summary>
+            Validator for a Variant "/>
+            </summary>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Validators.VariantValidator.#ctor(FluentValidation.AbstractValidator{Ucommerce.EntitiesV2.Product})">
+            <summary>
+            Validate a variant.
+            Includes all validation rules from a <see cref="T:Ucommerce.SystemHttp.Validators.ProductValidator" />
+            </summary>
+            <param name="productValidator">A validator for a <see cref="T:Ucommerce.EntitiesV2.Product"/>.</param>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Validators.VariantValidator.UniqueSkuAndVariantSku(Ucommerce.EntitiesV2.Product,System.String,System.String)">
+            <summary>
+            Checks whether the sku of the product is unique.
+            </summary>
+            <param name="product"></param>
+            <param name="sku"></param>
+            <param name="variantSku"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Ucommerce.SystemHttp.Validators.VariantValidator.GetUniqueSkuMessage(Ucommerce.EntitiesV2.Product,System.Object)">
+            <summary>
+            Returns a string validation message for a product and sku string
+            </summary>
+            <param name="product"></param>
+            <param name="sku"></param>
+            <returns>Formatted validation message.</returns>
+        </member>
+    </members>
+</doc>

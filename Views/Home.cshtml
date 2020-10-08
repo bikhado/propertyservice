@@ -1,0 +1,222 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.Home>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Layout.cshtml";
+    var homePage = (ContentModels.Home)Model.Root();
+    var homeModelsPage = (HomeModels)homePage.ChildrenOfType("homeModels").FirstOrDefault();
+    var aboutPage = (About)homePage.ChildrenOfType("about").FirstOrDefault();
+    var servicePage = (Services)homePage.ChildrenOfType("services").FirstOrDefault();
+    var quotePricePage = (QuotePrice)homePage.ChildrenOfType("quotePrice").FirstOrDefault();
+    var contactPage = (Contact)homePage.ChildrenOfType("contact").FirstOrDefault();
+    var socialsPage = (Socials)homePage.ChildrenOfType("socials").FirstOrDefault();
+}
+
+<!-- Get Touch Section -->
+<div id="get-touch">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-md-6 col-md-offset-1">
+                <h3>@quotePricePage.NameContent</h3>
+                <p>@quotePricePage.Content</p>
+            </div>
+            <div class="col-xs-12 col-md-4 text-center"><a href="#@contactPage.UrlSegment" class="btn btn-custom btn-lg page-scroll">@quotePricePage.Name</a></div>
+        </div>
+    </div>
+</div>
+
+@if (aboutPage.HasProperty("addToNav") && aboutPage.GetProperty("addToNav").Value().Equals(true))
+{
+    <!-- About Section -->
+    <div id="@aboutPage.UrlSegment">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-md-6"> <img src="@aboutPage.AboutBanner.Url" class="img-responsive" alt=""> </div>
+                <div class="col-xs-12 col-md-6">
+                    <div class="about-text">
+                        <h2>@aboutPage.AboutTitle</h2>
+                        <p>
+                            @aboutPage.AboutContent
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (servicePage.HasProperty("addToNav") && servicePage.GetProperty("addToNav").Value().Equals(true))
+{
+    <!-- Services Section -->
+    <div id="@servicePage.UrlSegment">
+        <div class="container">
+            <div class="section-title">
+                <h2>@servicePage.Title</h2>
+            </div>
+
+            @{
+                var temp = 0;
+                var detailsApartment = servicePage.Children.ToArray();
+                var detailApartmentCount = detailsApartment.Length;
+                var lineApartment = (int)Math.Ceiling((double)detailApartmentCount / (double)3);
+            }
+
+            @for (int i = 0; i < lineApartment; i++)
+            {
+                <div class="row">
+                    @for (int j = 0; j < 3; j++)
+                    {
+                        if (temp < detailApartmentCount)
+                        {
+                            var detailApartment = (Service)detailsApartment[temp];
+                            <div class="col-md-4">
+                                <div class="service-media"> <img src="@detailApartment.ImageContent.Url" alt=" "> </div>
+                                <div class="service-desc">
+                                    <h3>@detailApartment.Title</h3>
+                                    <p>@detailApartment.Content</p>
+                                </div>
+                            </div>
+                            temp++;
+                        }
+                    }
+                </div>
+            }
+
+        </div>
+    </div>
+}
+
+@if (homeModelsPage.HasProperty("addToNav") && homeModelsPage.GetProperty("addToNav").Value().Equals(true))
+{
+    <!-- Gallery Section -->
+    <div id="@homeModelsPage.UrlSegment">
+        <div class="container">
+            <div class="section-title">
+                <h2>@homeModelsPage.Title</h2>
+            </div>
+            <div class="row">
+                <div class="portfolio-items">
+
+                    @foreach (HomeModel item in homeModelsPage.Children.Take((int)homeModelsPage.NumberOfDetail))
+                    {
+                        <div class="col-sm-6 col-md-4 col-lg-4">
+                            <div class="portfolio-item">
+                                <div class="hover-bg">
+                                    <a href="@item.ImageContent.Url" title="@item.DetailContent" data-lightbox-gallery="gallery1">
+                                        <div class="hover-text">
+                                            <h4>@item.Title</h4>
+                                        </div>
+                                        <img src="@item.ImageContent.Url" class="img-responsive" alt="@item.DetailContent">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (contactPage.HasProperty("addToNav") && contactPage.GetProperty("addToNav").Value().Equals(true))
+{
+    <!-- Contact Section -->
+    <div id="@contactPage.UrlSegment">
+        <div class="container">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="section-title">
+                        <h2>@contactPage.Title</h2>
+                        <p>@contactPage.SologanContent</p>
+                    </div>
+
+                    @if (!(TempData["message-noti"]?.ToString()).IsNullOrWhiteSpace())
+                    {
+                        <div class="alert alert-info" role="alert">
+                            @TempData["message-noti"]
+                        </div>
+                    }
+
+                    @using (Html.BeginUmbracoForm("SubmitForm", "Contact", null, new { @id = "contactForm", @name = "sentMessage" }, FormMethod.Post))
+                    {
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <input type="text" id="name" name="name" class="form-control" placeholder="Name" required="required">
+                                    <span class="text-danger" id="name-error"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <input type="email" id="email" name="email" class="form-control" placeholder="Email" required="required">
+                                    <span class="text-danger" id="email-error"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <input type="number" id="phonenumber" name="phonenumber" class="form-control" placeholder="Phone number" required="required">
+                                    <span class="text-danger" id="phonenumber-error"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <textarea name="message" id="message" class="form-control" rows="4" placeholder="Message" required></textarea>
+                            <span class="text-danger" id="message-error"></span>
+                        </div>
+                        <div id="success"></div>
+                        <input type="button" id="submit-contact" value="Send Message" class="btn btn-custom btn-lg" />
+                    }
+                </div>
+            </div>
+            <div class="col-md-3 col-md-offset-1 contact-info">
+                <div class="contact-item">
+                    <h4>@contactPage.TitleContent</h4>
+                    <p>
+                        <span>Address</span>@contactPage.Address
+                    </p>
+                </div>
+                <div class="contact-item">
+                    <p><span>Phone</span> @contactPage.Phone</p>
+                </div>
+                <div class="contact-item">
+                    <p><span>Email</span> @contactPage.Email</p>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="social">
+                        <ul>
+                            @foreach (Social item in socialsPage.Children.Take((int)socialsPage.NumberOfSocial))
+                            {
+                                <li><a href="@item.Link" target="_blank"><i class="@item.Class"></i></a></li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts{
+    @if (!(TempData["message-noti"]?.ToString()).IsNullOrWhiteSpace())
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                Toastify({
+                    text: "@TempData["message-noti"]",
+                    duration: 0,
+                    newWindow: false,
+                    gravity: "bottom",
+                    position: "center",
+                    close: true,
+                    stopOnFocus: true
+                }).showToast();
+            });
+        </script>
+    }
+}

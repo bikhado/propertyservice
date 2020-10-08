@@ -1,0 +1,20 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.New>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Layout.cshtml";
+}
+<div class="container" style="width: 80%">
+    <h1>@Model.Title</h1>
+    @Model.Content
+</div>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            console.log($(".lazy").attr("data-src"));
+            $(".lazy").each(function (index) {
+                $(this).attr("src", $(this).attr("data-src"));
+            });
+        })
+    </script>
+}

@@ -1,0 +1,68 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.News>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@using PROPERTY_SERVICE.Helpers;
+
+@{
+    Layout = "Layout.cshtml";
+
+    var homePage = (ContentModels.Home)Model.Root();
+
+    var newsPage = (News)homePage.ChildrenOfType("news").FirstOrDefault();
+    var infoNews = newsPage.Children.Where(x => x.IsVisible()).OrderByDescending(y => y.CreateDate);
+
+    var isNewsPage = newsPage.Id == Model.Id;
+    var fallbackPageSize = isNewsPage ? 6 : 3;
+
+    var pageNumber = QueryStringHelper.GetIntFromQueryString(Request, "page", 1);
+    var pageSize = QueryStringHelper.GetIntFromQueryString(Request, "size", fallbackPageSize);
+
+    var pageOfNews = infoNews?.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToArray();
+    var totalItemCount = infoNews?.Count();
+    var pageCount = totalItemCount > 0 ? Math.Ceiling((double)totalItemCount / pageSize) : 1;
+}
+<div class="container">
+    <div class="section-title">
+        <h2>@Model.Name</h2>
+    </div>
+    @foreach (New item in pageOfNews)
+    {
+        <div class="well">
+            <div class="media">
+                <a class="pull-left" href="@item.Url">
+                    <img class="media-object" src="@item.Image" style="width: 150px;height: 150px">
+                </a>
+                <div class="media-body">
+                    <h4 class="media-heading" style="color: #1f386e; font-weight:400"><a href="@item.Url">@item.Title</a></h4>
+                    <p>
+                        @item.Description
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div style="float: right">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="page-link @(pageNumber == 1 ? "active" : "")" href="@($"{newsPage.Url}?page=1&size={pageSize}")" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                </li>
+
+                @for (int i = 1; i <= pageCount; i++)
+                {
+                    <li class="page-item @(pageNumber == i ? "active" : "")"><a class="page-link" href="@($"{newsPage.Url}?page={i}&size={pageSize}")">@i</a></li>
+                }
+
+                <li class="page-item">
+                    <a class="page-link @(pageNumber == pageCount ? "active" : "")" href="@($"{newsPage.Url}?page={pageCount}&size={pageSize}")" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
